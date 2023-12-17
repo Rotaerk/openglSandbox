@@ -9,7 +9,7 @@
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
       hs = pkgs.haskellPackages;
-      openglSandbox = hs.callCabal2nix "openglSandbox" ./. {};
+      openglSandbox = hs.callCabal2nix "openglSandbox" ./openglSandbox {};
     in {
 
       packages.x86_64-linux = { inherit openglSandbox; };
