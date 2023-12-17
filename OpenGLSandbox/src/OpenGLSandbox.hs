@@ -7,11 +7,14 @@ import Prelude.Local
 --import Paths_OpenGLSandbox
 
 import Control.Exception
+import Control.Monad.Extra
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Resource
 import Data.Acquire.Local
 import Data.Function
+import Data.Functor
 import Data.IORef
+import Graphics.GL.Core33
 import qualified Graphics.UI.GLFW.Local as GLFW
 import System.Clock
 
@@ -53,8 +56,20 @@ resourceMain = do
   ioPutStrLn "Render loop starting."
   liftIO $ fix $ \renderLoop ->
     GLFW.getWindowStatus window lastWindowResizeTimeRef >>= \case
-      GLFW.WindowResized -> renderLoop
+      GLFW.WindowResized -> do
+        (width, height) <- GLFW.getFramebufferSize window
+        glViewport 0 0 (fromIntegral width) (fromIntegral height)
+        putStrLn $ "Resized viewport to " ++ show width ++ "x" ++ show height
+        renderLoop
       GLFW.WindowClosed -> pure ()
       GLFW.WindowReady -> do
+        processFrame window
         GLFW.swapBuffers window
         renderLoop
+
+processFrame :: GLFW.Window -> IO ()
+processFrame window = do
+  whenM (GLFW.getKey window GLFW.Key'Escape <&> (== GLFW.KeyState'Pressed)) $
+    GLFW.setWindowShouldClose window True
+  glClearColor 0.2 0.3 0.3 1
+  glClear GL_COLOR_BUFFER_BIT

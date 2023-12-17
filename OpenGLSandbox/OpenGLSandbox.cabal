@@ -19,6 +19,7 @@ common common
     exceptions,
     extra,
     GLFW-b,
+    OpenGLRaw,
     resourcet,
     base
 
