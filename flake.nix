@@ -9,17 +9,21 @@
     let
       pkgs = import nixpkgs { system = "x86_64-linux"; };
       hs = pkgs.haskellPackages;
-      openglSandbox = hs.callCabal2nix "openglSandbox" ./openglSandbox {};
+      OpenGLSandbox = hs.callCabal2nix "OpenGLSandbox" ./OpenGLSandbox {};
     in {
 
-      packages.x86_64-linux = { inherit openglSandbox; };
+      packages.x86_64-linux = { inherit OpenGLSandbox; };
 
       packages.x86_64-linux.default = hs.shellFor {
-        packages = p: [ openglSandbox ];
-        nativeBuildInputs = with hs; [
-          cabal-install
-          haskell-language-server
-        ];
+        packages = p: [ OpenGLSandbox ];
+        nativeBuildInputs =
+          (with hs; [
+            cabal-install
+            haskell-language-server
+          ]) ++
+          (with pkgs; [
+            libGL
+          ]);
       };
 
     };

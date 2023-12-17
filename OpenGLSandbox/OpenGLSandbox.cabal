@@ -1,0 +1,32 @@
+cabal-version: 3.4
+
+name: OpenGLSandbox
+version: 0.1.0.0
+synopsis: A sandbox for tinkering with OpenGL.
+license: BSD-3-Clause
+license-file: LICENSE
+author: Matthew Stewart
+maintainer: m.scott.stewart@gmail.com
+category: Graphics
+build-type: Simple
+
+common common
+  hs-source-dirs: src
+  ghc-options: -threaded -Wall -Wno-name-shadowing -Wno-unused-matches -fno-ignore-asserts
+  default-language: GHC2021
+  build-depends:
+    clock,
+    exceptions,
+    extra,
+    GLFW-b,
+    resourcet,
+    base
+
+executable OpenGLSandbox
+  import: common
+  main-is: OpenGLSandbox.hs
+  other-modules:
+    Data.Acquire.Local
+    Graphics.UI.GLFW.Local
+    Prelude.Local
+    Paths_OpenGLSandbox
