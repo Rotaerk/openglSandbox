@@ -14,6 +14,9 @@ import Data.Acquire.Local
 import Data.Function
 import Data.Functor
 import Data.IORef
+import qualified Data.Vector.Storable as V
+import Foreign.Marshal.Alloc
+import Foreign.Storable
 import Graphics.GL.Core33
 import qualified Graphics.UI.GLFW.Local as GLFW
 import System.Clock
@@ -53,6 +56,18 @@ resourceMain = do
     pure ref
   ioPutStrLn "Window framebuffer size callback registered."
 
+  vboId <- liftIO $ alloca $ \vboIdPtr -> do
+    glGenBuffers 1 vboIdPtr
+    peek vboIdPtr
+  ioPutStrLn $ "Created VBO with ID " ++ show vboId
+
+  liftIO $ glBindBuffer GL_ARRAY_BUFFER vboId
+  ioPutStrLn "Bound new VBO to GL_ARRAY_BUFFER."
+
+  liftIO $ V.unsafeWith triangleVertices $ \triangleVerticesPtr -> do
+    glBufferData GL_ARRAY_BUFFER (fromIntegral $ V.length triangleVertices * sizeOf (undefined :: Float)) triangleVerticesPtr GL_STATIC_DRAW
+  ioPutStrLn "Filled VBO."
+
   ioPutStrLn "Render loop starting."
   liftIO $ fix $ \renderLoop ->
     GLFW.getWindowStatus window lastWindowResizeTimeRef >>= \case
@@ -73,3 +88,11 @@ processFrame window = do
     GLFW.setWindowShouldClose window True
   glClearColor 0.2 0.3 0.3 1
   glClear GL_COLOR_BUFFER_BIT
+
+triangleVertices :: V.Vector Float
+triangleVertices = V.fromList
+  [
+    -0.5, -0.5, 0,
+    0.5, 0.5, 0,
+    0, 0.5, 0
+  ]

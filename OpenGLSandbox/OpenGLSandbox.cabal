@@ -19,8 +19,10 @@ common common
     exceptions,
     extra,
     GLFW-b,
+    linear,
     OpenGLRaw,
     resourcet,
+    vector,
     base
 
 executable OpenGLSandbox
